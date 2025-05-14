@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create TimeLock</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Create Your TimeLock</h1>
+
+    <form id="timeLockForm">
+        <label for="title">Title</label>
+        <input type="text" id="title" placeholder="Enter a title" required>
+
+        <label for="message">Message</label>
+        <textarea id="message" placeholder="Write your message here..." required></textarea>
+
+        <label for="unlockDate">Unlock Date</label>
+        <input type="date" id="unlockDate" required>
+
+        <label for="image">Upload Image</label>
+        <input type="file" id="image" accept="image/*">
+
+        <label for="password">Set a Password</label>
+        <input type="password" id="password" placeholder="Create a password" required>
+
+        <button type="submit">Create TimeLock</button>
+        <p id="error-message" class="error" style="display: none;">Please fill all fields correctly.</p>
+    </form>
+</div>
+
+<script>
+    document.getElementById("timeLockForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const title = document.getElementById("title").value;
+        const message = document.getElementById("message").value;
+        const unlockDate = document.getElementById("unlockDate").value;
+        const imageFile = document.getElementById("image").files[0];
+        const password = document.getElementById("password").value;
+
+        if (title && message && unlockDate && password) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                const timeLock = {
+                    title,
+                    message,
+                    unlockDate,
+                    imageDataUrl: reader.result || null,
+                    password
+                };
+
+                localStorage.setItem("savedTimeLock", JSON.stringify(timeLock));
+
+                alert("TimeLock created successfully!");
+                window.location.href = "view.html";
+            };
+
+            if (imageFile) {
+                reader.readAsDataURL(imageFile);
+            } else {
+                reader.onloadend();
+            }
+        } else {
+            document.getElementById("error-message").style.display = "block";
+        }
+    });
+</script>
+
+</body>
+</html>
