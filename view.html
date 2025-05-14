@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View TimeLock</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>View Your TimeLock</h1>
+
+    <div id="lockedSection">
+        <p id="statusMessage">Checking unlock status...</p>
+        <div id="passwordPrompt" style="display:none;">
+            <label for="passwordInput">Enter Password to Unlock:</label>
+            <input type="password" id="passwordInput" placeholder="Enter password" required>
+            <button onclick="unlockTimeLock()">Unlock</button>
+        </div>
+        <p id="error-message" class="error" style="display:none;">Incorrect password.</p>
+    </div>
+
+    <div id="unlockedSection" style="display:none;">
+        <h2 id="lockTitle"></h2>
+        <p id="lockMessage"></p>
+        <img id="lockImage" src="" alt="Uploaded Image" style="max-width: 100%; margin-top: 20px; border-radius: 10px;">
+        <a href="index.html" class="home-link">← Back to Home</a>
+    </div>
+</div>
+
+<script>
+    const savedData = JSON.parse(localStorage.getItem("savedTimeLock"));
+    const now = new Date().toISOString().split("T")[0];
+    const statusMsg = document.getElementById("statusMessage");
+    const passwordPrompt = document.getElementById("passwordPrompt");
+
+    if (!savedData) {
+        statusMsg.textContent = "No TimeLock data found.";
+    } else if (now < savedData.unlockDate) {
+        statusMsg.textContent = `Your message will unlock on: ${savedData.unlockDate}`;
+    } else {
+        statusMsg.textContent = "TimeLock is ready to unlock!";
+        passwordPrompt.style.display = "block";
+    }
+
+    function unlockTimeLock() {
+        const inputPassword = document.getElementById("passwordInput").value;
+        if (inputPassword === savedData.password) {
+            document.getElementById("lockedSection").style.display = "none";
+            document.getElementById("unlockedSection").style.display = "block";
+            document.getElementById("lockTitle").textContent = savedData.title;
+            document.getElementById("lockMessage").textContent = savedData.message;
+            if (savedData.imageDataUrl) {
+                document.getElementById("lockImage").src = savedData.imageDataUrl;
+            } else {
+                document.getElementById("lockImage").style.display = "none";
+            }
+        } else {
+            document.getElementById("error-message").style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
